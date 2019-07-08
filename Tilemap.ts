@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
-// import 'pixi-tilemap';
-import './pixi-tilemap/pixi-tilemap';
+import 'pixi-tilemap';
 // import './node_modules/pixi.js/pixi.js';
+// import './pixi-tilemap/pixi-tilemap';
 
 export default class TileMap {
 	public readonly container = new PIXI.Container();
@@ -15,7 +15,7 @@ export default class TileMap {
 	private readonly textureCache = [];
 
 	constructor(path: string, filename: string) {
-		PIXI.tilemap.Constant.use32bitIndex = true;
+		// PIXI.tilemap.Constant.use32bitIndex = true;
 		this.container.addChild(this.tilemap);
 		fetch(path + filename).then(res => res.json()).then(res => {
 			this.mapData = res;

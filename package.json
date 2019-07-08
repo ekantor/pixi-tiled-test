@@ -5,15 +5,20 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify index.ts -d -p [ tsify -t es2016 ] -o index.js",
-    "start": "http-server"
+    "build": "browserify index.ts -d -p [ tsify -t es5 -m CommonJS ] -o index.js",
+    "start": "http-server -c-1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "browserify": "^16.3.0",
     "http-server": "^0.11.1",
-    "pixi.js": "^5.0.4",
+    "pixi-tilemap": "^1.2.4",
+    "pixi.js": "^4.8.8"
+  },
+  "devDependencies": {
+    "@types/node": "^12.6.1",
+    "@types/pixi.js": "^4.8.8",
+    "browserify": "^16.3.0",
     "tsify": "^4.0.1",
     "typescript": "^3.5.2"
   }
