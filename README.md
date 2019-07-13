@@ -1,7 +1,7 @@
 # pixi-tiled-test
 
 - clone ekantor/pixi-tilemap to ../pixi-tilemap
-- in pixi-tilemap:\n
+- in pixi-tilemap:
   - npm i
   - npm run build
 - in pixi-tiled-test:
