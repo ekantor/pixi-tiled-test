@@ -12,12 +12,11 @@
   "license": "ISC",
   "dependencies": {
     "http-server": "^0.11.1",
-    "pixi-tilemap": "^1.2.4",
-    "pixi.js": "^4.8.8"
+    "pixi-tilemap": "file:../pixi-tilemap",
+    "pixi.js": "^5.0.4"
   },
   "devDependencies": {
     "@types/node": "^12.6.1",
-    "@types/pixi.js": "^4.8.8",
     "browserify": "^16.3.0",
     "tsify": "^4.0.1",
     "typescript": "^3.5.2"

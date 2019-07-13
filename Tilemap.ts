@@ -1,106 +1,93 @@
 import * as PIXI from 'pixi.js';
+window['PIXI'] = PIXI;
+global['PIXI'] = PIXI;
 import 'pixi-tilemap';
-// import './node_modules/pixi.js/pixi.js';
-// import './pixi-tilemap/pixi-tilemap';
 
 export default class TileMap {
 	public readonly container = new PIXI.Container();
 	private mapData: any;
 	private tilesetData: any;
-	private baseTexture: PIXI.BaseTexture;
-	private tilemap = new PIXI.tilemap.CompositeRectTileLayer();
-
-	private readonly sprites = [];
+	private texture: PIXI.Texture;
 
 	private readonly textureCache = [];
 
 	constructor(path: string, filename: string) {
-		// PIXI.tilemap.Constant.use32bitIndex = true;
-		this.container.addChild(this.tilemap);
+		PIXI.tilemap.Constant.use32bitIndex = true;
 		fetch(path + filename).then(res => res.json()).then(res => {
 			this.mapData = res;
 			fetch(path + this.mapData.tilesets[0].source.split('.')[0] + '.json').then(res => res.json()).then(res => {
 				this.tilesetData = res;
-				const img = document.createElement('img');
-				img.src = path + this.tilesetData.image;
-				img.onload = () => {
-					this.baseTexture = new PIXI.BaseTexture(img);
+				PIXI.Loader.shared.add('tileset', path + this.tilesetData.image);
+				PIXI.Loader.shared.load((loader, resources) => {
+					this.texture = resources.tileset.texture;
 					this.mapData.layers.forEach(layer => {
 						if (!layer.visible || layer.type != "tilelayer")
 							return;
-	
+						
+						const container = this.container.addChild(new PIXI.Container()) as PIXI.Container;
+						container.alpha = layer.opacity;
+						let tileNum = 0;
+						let currTileLayer;
+						
 						if (layer.chunks) {
 							layer.chunks.forEach(chunk => {
 								chunk.data.forEach((id, index) => {
 									const i = index % chunk.height + chunk.x;
 									const j = Math.floor(index / chunk.height) + chunk.y;
-									this.createTile(id, i, j, layer.opacity);
+									if (tileNum++ % 16384 == 0) {
+										currTileLayer = container.addChild(new PIXI.tilemap.CompositeRectTileLayer());
+									}							
+									this.createTile(currTileLayer, id, i, j);
 								});
 							});
 						}
 					});
-				}
+				});
 			});
 		});
 	}
 
-	private createTile(id: number, i: number, j: number, opacity: number) {
-		let flags = this.getFlags(id);
-		id = this.clearFlags(id);
-
+	private createTile(container, id: number, i: number, j: number) {
 		if (id == 0)
 			return;
 
-		id = id - 1;
-
-		if (!this.textureCache[id]) {
-			this.createTexture(id);
+		let flags = this.getFlags(id);
+		const tilesetId = this.clearFlags(id) - 1;
+		
+		if (!this.textureCache[tilesetId]) {
+			this.createTexture(tilesetId);
 		}
+		const texture = this.textureCache[tilesetId];
 
-		this.tilemap.addFrame(this.textureCache[id], i * this.tilesetData.tilewidth, j * this.tilesetData.tileheight);
+		const mirror = this.getMirror(flags);
 
-		// const sprite = new PIXI.Sprite(this.textureCache[id]);
-		// sprite.position.set(i * this.tilesetData.tilewidth, j * this.tilesetData.tileheight);
-
-		// if (flags.horizontalFlip) {
-		// 	sprite.scale.x *= -1;
-		// }
-		// if (flags.verticalFlip) {
-		// 	sprite.scale.y *= -1;
-		// }
-		// if (flags.diagonalFlip) {
-		// 	sprite.rotation = Math.PI / 2;
-		// 	sprite.scale.y *= -1;
-		// }
-
-		// sprite.alpha = opacity;
-
-		// this.container.addChild(sprite);
-		// this.sprites.push(sprite);
+		container.addFrame(texture, i * this.tilesetData.tilewidth, j * this.tilesetData.tileheight, mirror);
 	}
 
-	private createTexture(id: number) {
-		let x = this.tilesetData.tilewidth * (id % this.tilesetData.columns);
-		let y = this.tilesetData.tileheight * Math.floor(id / this.tilesetData.columns);
+	private createTexture(tilesetId: number) {
+		let x = this.tilesetData.tilewidth * (tilesetId % this.tilesetData.columns);
+		let y = this.tilesetData.tileheight * Math.floor(tilesetId / this.tilesetData.columns);
 		let width = this.tilesetData.tilewidth;
 		let height = this.tilesetData.tileheight;
 
-		this.textureCache[id] = new PIXI.Texture(this.baseTexture, new PIXI.Rectangle(x, y, width, height));
+		this.textureCache[tilesetId] = new PIXI.Texture(this.texture.baseTexture, new PIXI.Rectangle(x, y, width, height));
 	}
 
-	// public updateVisibility(target: { x: number, y: number }) {
-	// 	this.container.removeChildren();
-	// 	let ctr = 0;
-	// 	this.sprites.forEach(sprite => {
-	// 		const dx = Math.abs(target.x - sprite.x);
-	// 		const dy = Math.abs(target.y - sprite.y);
-	// 		if (dx < 1000 && dy < 1000) {
-	// 			ctr++;
-	// 			this.container.addChild(sprite);
-	// 		}
-	// 	});
-	// 	console.log(ctr);
-	// }
+	private getMirror(flags) {
+		let res = 0;
+		if (flags.horizontalFlip) {
+			res += 2;
+		}
+		if (flags.verticalFlip) {
+			res += 4;
+		}
+		if (flags.diagonalFlip) {
+			throw new Error('Diagonal flip not implemented')
+			// sprite.rotation = Math.PI / 2;
+			// sprite.scale.y *= -1;
+		}
+		return res;
+	} 
 
 	private getFlags(tile: number) {
 		return {
