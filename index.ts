@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import TILEDGraphics from './TILEDGraphics';
 
 const p2 = require('p2');
+const getCollisionBodies = require('./getCollisionBodies');
 
 const shape = new p2.Circle({ radius: 32 });
 
@@ -29,47 +30,9 @@ window.onload = () => {
 		app.stage.addChild(player);
 
 		const collisionLayer = tilemap.layers.find(layer => layer.name === 'akadalyok');
-		collisionLayer.objects.forEach(object => {
-			if (object.ellipse) {
-				const shape = new p2.Circle({ radius: object.width / 2 });
-				const body = new p2.Body();
-				body.position[0] = object.x + (collisionLayer.offsetx || 0);
-				body.position[1] = object.y + (collisionLayer.offsety || 0);
-				body.addShape(shape, [shape.radius, shape.radius]);				
-				world.addBody(body);
-
-				// const graphics = new PIXI.Graphics();
-				// graphics.beginFill(0xff0000);
-				// graphics.drawCircle(object.width / 2, object.width / 2, object.width / 2);
-				// graphics.endFill();
-				// graphics.x = object.x + (collisionLayer.offsetx || 0);
-				// graphics.y = object.y + (collisionLayer.offsety || 0);
-				// app.stage.addChild(graphics);
-			} else if (object.polygon) {
-				const body = new p2.Body();
-				body.fromPolygon(object.polygon.map(p => [
-					p.x + object.x + (collisionLayer.offsetx || 0), 
-					p.y + object.y + (collisionLayer.offsety || 0)
-				]));
-				world.addBody(body);
-
-				// const graphics = new PIXI.Graphics();
-				// graphics.beginFill(0xff0000);
-				// object.polygon.forEach((p, i) => {
-				// 	if (i == 0) {
-				// 		graphics.moveTo(p.x, p.y);
-				// 	} else {
-				// 		graphics.lineTo(p.x, p.y);
-				// 	}
-				// })
-				// graphics.endFill();
-				// graphics.x = object.x + (collisionLayer.offsetx || 0);
-				// graphics.y = object.y + (collisionLayer.offsety || 0);
-				// app.stage.addChild(graphics);
-			} else {
-				console.warn('not implemented');
-			}
-		});
+		if (collisionLayer) {
+			getCollisionBodies(collisionLayer).forEach(body => world.addBody(body));
+		}
 	});
 	
 	document.body.appendChild(app.view);
