@@ -9,37 +9,33 @@ export default class TILEDGraphics extends PIXI.Container {
 	constructor(tilemap, path) {
 		super();
 		fetch(this.getTilesetPath(path, tilemap.tilesets[0])).then(res => res.json()).then(tileset => {
-			PIXI.Loader.shared.add('tileset', this.getTilesetImagePath(path, tileset));
-			PIXI.Loader.shared.load((loader, resources) => {
-				const baseTexture = resources.tileset.texture.baseTexture;
-				tilemap.layers.forEach(layer => {
-					if (!layer.visible || layer.type != "tilelayer")
-						return;
-					
-					const container = this.addChild(new PIXI.Container()) as PIXI.Container;
-					container.alpha = layer.opacity;
-					let tileNum = 0;
-					let currTileLayer;
-					
-					const processLayerData = (layerData) => {
-						layerData.data.forEach((id, index) => {
-							const i = index % layerData.width + layerData.x;
-							const j = Math.floor(index / layerData.width) + layerData.y;
-							if (tileNum++ % 16384 == 0) {
-								currTileLayer = container.addChild(new PIXI.tilemap.CompositeRectTileLayer());
-							}							
-							const x = i * tileset.tilewidth + (layerData.offsetx || 0);
-							const y = j * tileset.tileheight + (layerData.offsety || 0);
-							this.createTile(baseTexture, tileset, currTileLayer, id, x, y);
-						});
-					}
+			const baseTexture = PIXI.BaseTexture.from(this.getTilesetImagePath(path, tileset));
+			tilemap.layers.forEach(layer => {
+				if (!layer.visible || layer.type != "tilelayer") return;
+				
+				const container = this.addChild(new PIXI.Container()) as PIXI.Container;
+				container.alpha = layer.opacity;
+				let tileNum = 0;
+				let currTileLayer;
+				
+				const processLayerData = (layerData) => {
+					layerData.data.forEach((id, index) => {
+						const i = index % layerData.width + layerData.x;
+						const j = Math.floor(index / layerData.width) + layerData.y;
+						if (tileNum++ % 16384 == 0) {
+							currTileLayer = container.addChild(new PIXI.tilemap.CompositeRectTileLayer());
+						}							
+						const x = i * tileset.tilewidth + (layerData.offsetx || 0);
+						const y = j * tileset.tileheight + (layerData.offsety || 0);
+						this.createTile(baseTexture, tileset, currTileLayer, id, x, y);
+					});
+				}
 
-					if (layer.data) {
-						processLayerData(layer);
-					} else if (layer.chunks) {
-						layer.chunks.forEach(processLayerData);
-					}
-				});
+				if (layer.data) {
+					processLayerData(layer);
+				} else if (layer.chunks) {
+					layer.chunks.forEach(processLayerData);
+				}
 			});
 		});
 	}
