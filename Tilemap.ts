@@ -31,7 +31,9 @@ export default class TileMap {
 								if (tileNum++ % 16384 == 0) {
 									currTileLayer = container.addChild(new PIXI.tilemap.CompositeRectTileLayer());
 								}							
-								this.createTile(baseTexture, tileset, currTileLayer, id, i, j);
+								const x = i * tileset.tilewidth + (layerData.offsetx || 0);
+								const y = j * tileset.tileheight + (layerData.offsety || 0);
+								this.createTile(baseTexture, tileset, currTileLayer, id, x, y);
 							});
 						}
 
@@ -46,7 +48,7 @@ export default class TileMap {
 		});
 	}
 
-	private createTile(baseTexture, tileset, container, id: number, i: number, j: number) {
+	private createTile(baseTexture, tileset, container, id: number, x, y) {
 		if (id == 0)
 			return;
 
@@ -60,7 +62,7 @@ export default class TileMap {
 
 		const mirror = this.getMirror(flags);
 
-		container.addFrame(texture, i * tileset.tilewidth, j * tileset.tileheight, mirror);
+		container.addFrame(texture, x, y, mirror);
 	}
 
 	private createTexture(baseTexture, tileset, tilesetId: number) {
@@ -75,10 +77,10 @@ export default class TileMap {
 	private getMirror(flags) {
 		let res = 0;
 		if (flags.horizontalFlip) {
-			res += 2;
+			res |= 2;
 		}
 		if (flags.verticalFlip) {
-			res += 4;
+			res |= 4;
 		}
 		if (flags.diagonalFlip) {
 			console.warn('Diagonal flip not implemented');
