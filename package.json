@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "http-server": "^0.11.1",
+    "p2": "file:../p2.js",
     "pixi-tilemap": "file:../pixi-tilemap",
     "pixi.js": "^5.0.4"
   },
