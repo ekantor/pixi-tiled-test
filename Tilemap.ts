@@ -5,22 +5,18 @@ import 'pixi-tilemap';
 
 export default class TileMap {
 	public readonly container = new PIXI.Container();
-	private mapData: any;
-	private tilesetData: any;
 	private texture: PIXI.Texture;
 
 	private readonly textureCache = [];
 
-	constructor(path: string, filename: string) {
+	constructor(path: string) {
 		PIXI.tilemap.Constant.use32bitIndex = true;
-		fetch(path + filename).then(res => res.json()).then(res => {
-			this.mapData = res;
-			fetch(path + this.mapData.tilesets[0].source.split('.')[0] + '.json').then(res => res.json()).then(res => {
-				this.tilesetData = res;
-				PIXI.Loader.shared.add('tileset', path + this.tilesetData.image);
+		fetch(path).then(res => res.json()).then(mapData => {
+			fetch(this.getTilesetPath(path, mapData.tilesets[0])).then(res => res.json()).then(tileset => {
+				PIXI.Loader.shared.add('tileset', this.getTilesetImagePath(path, tileset));
 				PIXI.Loader.shared.load((loader, resources) => {
 					this.texture = resources.tileset.texture;
-					this.mapData.layers.forEach(layer => {
+					mapData.layers.forEach(layer => {
 						if (!layer.visible || layer.type != "tilelayer")
 							return;
 						
@@ -37,7 +33,7 @@ export default class TileMap {
 									if (tileNum++ % 16384 == 0) {
 										currTileLayer = container.addChild(new PIXI.tilemap.CompositeRectTileLayer());
 									}							
-									this.createTile(currTileLayer, id, i, j);
+									this.createTile(tileset, currTileLayer, id, i, j);
 								});
 							});
 						}
@@ -47,7 +43,7 @@ export default class TileMap {
 		});
 	}
 
-	private createTile(container, id: number, i: number, j: number) {
+	private createTile(tileset, container, id: number, i: number, j: number) {
 		if (id == 0)
 			return;
 
@@ -55,20 +51,20 @@ export default class TileMap {
 		const tilesetId = this.clearFlags(id) - 1;
 		
 		if (!this.textureCache[tilesetId]) {
-			this.createTexture(tilesetId);
+			this.createTexture(tileset, tilesetId);
 		}
 		const texture = this.textureCache[tilesetId];
 
 		const mirror = this.getMirror(flags);
 
-		container.addFrame(texture, i * this.tilesetData.tilewidth, j * this.tilesetData.tileheight, mirror);
+		container.addFrame(texture, i * tileset.tilewidth, j * tileset.tileheight, mirror);
 	}
 
-	private createTexture(tilesetId: number) {
-		let x = this.tilesetData.tilewidth * (tilesetId % this.tilesetData.columns);
-		let y = this.tilesetData.tileheight * Math.floor(tilesetId / this.tilesetData.columns);
-		let width = this.tilesetData.tilewidth;
-		let height = this.tilesetData.tileheight;
+	private createTexture(tileset, tilesetId: number) {
+		let x = tileset.tilewidth * (tilesetId % tileset.columns);
+		let y = tileset.tileheight * Math.floor(tilesetId / tileset.columns);
+		let width = tileset.tilewidth;
+		let height = tileset.tileheight;
 
 		this.textureCache[tilesetId] = new PIXI.Texture(this.texture.baseTexture, new PIXI.Rectangle(x, y, width, height));
 	}
@@ -100,5 +96,20 @@ export default class TileMap {
 	private clearFlags(tile: number) {
 		tile &= ~(0x20000000 | 0x40000000 | 0x80000000);
 		return tile;
+	}
+
+	private getTilesetPath(path, tileset) {
+		const splitPath = path.split('/');
+		const split = tileset.source.split('.');
+		split[split.length - 1] = 'json';
+		const filename = split.join('.');
+		splitPath[splitPath.length - 1] = filename;
+		return splitPath.join('/');
+	}
+
+	private getTilesetImagePath(path, tileset) {
+		const splitPath = path.split('/');
+		splitPath[splitPath.length - 1] = tileset.image;
+		return splitPath.join('/');
 	}
 }
