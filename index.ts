@@ -1,12 +1,15 @@
 import * as PIXI from 'pixi.js';
-import TileMap from './Tilemap';
+import TILEDGraphics from './TILEDGraphics';
 
 window.onload = () => {	
+	const path = 'assets/1v1/1v1_field.json';
+
 	const app = new PIXI.Application({ width: 800, height: 600 });
-	const tilemap = new TileMap('assets/1v1/1v1_field.json');
 	
-	app.stage.addChild(tilemap.container);
-		
+	fetch(path).then(res => res.json()).then(tilemap => {
+		app.stage.addChild(new TILEDGraphics(tilemap, path));
+	});
+	
 	document.body.appendChild(app.view);
 	
 	const keys = {};
