@@ -24,17 +24,21 @@ export default class TileMap {
 						let tileNum = 0;
 						let currTileLayer;
 						
-						if (layer.chunks) {
-							layer.chunks.forEach(chunk => {
-								chunk.data.forEach((id, index) => {
-									const i = index % chunk.height + chunk.x;
-									const j = Math.floor(index / chunk.height) + chunk.y;
-									if (tileNum++ % 16384 == 0) {
-										currTileLayer = container.addChild(new PIXI.tilemap.CompositeRectTileLayer());
-									}							
-									this.createTile(baseTexture, tileset, currTileLayer, id, i, j);
-								});
+						const processLayerData = (layerData) => {
+							layerData.data.forEach((id, index) => {
+								const i = index % layerData.width + layerData.x;
+								const j = Math.floor(index / layerData.width) + layerData.y;
+								if (tileNum++ % 16384 == 0) {
+									currTileLayer = container.addChild(new PIXI.tilemap.CompositeRectTileLayer());
+								}							
+								this.createTile(baseTexture, tileset, currTileLayer, id, i, j);
 							});
+						}
+
+						if (layer.data) {
+							processLayerData(layer);
+						} else if (layer.chunks) {
+							layer.chunks.forEach(processLayerData);
 						}
 					});
 				});
@@ -77,7 +81,7 @@ export default class TileMap {
 			res += 4;
 		}
 		if (flags.diagonalFlip) {
-			throw new Error('Diagonal flip not implemented')
+			console.warn('Diagonal flip not implemented');
 			// sprite.rotation = Math.PI / 2;
 			// sprite.scale.y *= -1;
 		}

@@ -3,7 +3,7 @@ import TileMap from './Tilemap';
 
 window.onload = () => {	
 	const app = new PIXI.Application({ width: 800, height: 600 });
-	const tilemap = new TileMap('assets/world/map.json');
+	const tilemap = new TileMap('assets/1v1/1v1_field.json');
 	
 	app.stage.addChild(tilemap.container);
 		
