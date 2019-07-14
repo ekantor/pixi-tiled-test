@@ -5,18 +5,17 @@ import 'pixi-tilemap';
 
 export default class TileMap {
 	public readonly container = new PIXI.Container();
-	private texture: PIXI.Texture;
 
 	private readonly textureCache = [];
 
 	constructor(path: string) {
 		PIXI.tilemap.Constant.use32bitIndex = true;
-		fetch(path).then(res => res.json()).then(mapData => {
-			fetch(this.getTilesetPath(path, mapData.tilesets[0])).then(res => res.json()).then(tileset => {
+		fetch(path).then(res => res.json()).then(tilemap => {
+			fetch(this.getTilesetPath(path, tilemap.tilesets[0])).then(res => res.json()).then(tileset => {
 				PIXI.Loader.shared.add('tileset', this.getTilesetImagePath(path, tileset));
 				PIXI.Loader.shared.load((loader, resources) => {
-					this.texture = resources.tileset.texture;
-					mapData.layers.forEach(layer => {
+					const baseTexture = resources.tileset.texture.baseTexture;
+					tilemap.layers.forEach(layer => {
 						if (!layer.visible || layer.type != "tilelayer")
 							return;
 						
@@ -33,7 +32,7 @@ export default class TileMap {
 									if (tileNum++ % 16384 == 0) {
 										currTileLayer = container.addChild(new PIXI.tilemap.CompositeRectTileLayer());
 									}							
-									this.createTile(tileset, currTileLayer, id, i, j);
+									this.createTile(baseTexture, tileset, currTileLayer, id, i, j);
 								});
 							});
 						}
@@ -43,7 +42,7 @@ export default class TileMap {
 		});
 	}
 
-	private createTile(tileset, container, id: number, i: number, j: number) {
+	private createTile(baseTexture, tileset, container, id: number, i: number, j: number) {
 		if (id == 0)
 			return;
 
@@ -51,7 +50,7 @@ export default class TileMap {
 		const tilesetId = this.clearFlags(id) - 1;
 		
 		if (!this.textureCache[tilesetId]) {
-			this.createTexture(tileset, tilesetId);
+			this.createTexture(baseTexture, tileset, tilesetId);
 		}
 		const texture = this.textureCache[tilesetId];
 
@@ -60,13 +59,13 @@ export default class TileMap {
 		container.addFrame(texture, i * tileset.tilewidth, j * tileset.tileheight, mirror);
 	}
 
-	private createTexture(tileset, tilesetId: number) {
+	private createTexture(baseTexture, tileset, tilesetId: number) {
 		let x = tileset.tilewidth * (tilesetId % tileset.columns);
 		let y = tileset.tileheight * Math.floor(tilesetId / tileset.columns);
 		let width = tileset.tilewidth;
 		let height = tileset.tileheight;
 
-		this.textureCache[tilesetId] = new PIXI.Texture(this.texture.baseTexture, new PIXI.Rectangle(x, y, width, height));
+		this.textureCache[tilesetId] = new PIXI.Texture(baseTexture, new PIXI.Rectangle(x, y, width, height));
 	}
 
 	private getMirror(flags) {
