@@ -52,7 +52,6 @@ export default class TileMap {
 		if (id == 0)
 			return;
 
-		let flags = this.getFlags(id);
 		const tilesetId = this.clearFlags(id) - 1;
 		
 		if (!this.textureCache[tilesetId]) {
@@ -60,9 +59,7 @@ export default class TileMap {
 		}
 		const texture = this.textureCache[tilesetId];
 
-		const mirror = this.getMirror(flags);
-
-		container.addFrame(texture, x, y, mirror);
+		container.addFrame(texture, x, y, id);
 	}
 
 	private createTexture(baseTexture, tileset, tilesetId: number) {
@@ -72,30 +69,6 @@ export default class TileMap {
 		let height = tileset.tileheight;
 
 		this.textureCache[tilesetId] = new PIXI.Texture(baseTexture, new PIXI.Rectangle(x, y, width, height));
-	}
-
-	private getMirror(flags) {
-		let res = 0;
-		if (flags.horizontalFlip) {
-			res |= 2;
-		}
-		if (flags.verticalFlip) {
-			res |= 4;
-		}
-		if (flags.diagonalFlip) {
-			console.warn('Diagonal flip not implemented');
-			// sprite.rotation = Math.PI / 2;
-			// sprite.scale.y *= -1;
-		}
-		return res;
-	} 
-
-	private getFlags(tile: number) {
-		return {
-			diagonalFlip: tile & 0x20000000,
-			verticalFlip: tile & 0x40000000,
-			horizontalFlip: tile & 0x80000000
-		};
 	}
 
 	private clearFlags(tile: number) {
