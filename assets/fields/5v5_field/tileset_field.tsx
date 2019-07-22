@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tileset version="1.2" tiledversion="1.2.2" name="tileset_field" tilewidth="32" tileheight="32" tilecount="512" columns="16">
+ <image source="tileset_field.png" width="512" height="1024"/>
+ <terraintypes>
+  <terrain name=" " tile="-1"/>
+ </terraintypes>
+ <tile id="0" terrain=",,,0"/>
+ <tile id="1" terrain=",,0,0"/>
+ <tile id="2" terrain=",,0,0"/>
+ <tile id="3" terrain=",,0,0"/>
+ <tile id="4" terrain=",,0,0"/>
+ <tile id="5" terrain=",,0,0"/>
+ <tile id="6" terrain=",,0,0"/>
+ <tile id="7" terrain=",,0,"/>
+ <tile id="16" terrain=",0,,0"/>
+ <tile id="17" terrain="0,0,0,0"/>
+ <tile id="18" terrain="0,0,0,0"/>
+ <tile id="19" terrain="0,0,0,0"/>
+ <tile id="20" terrain="0,0,0,0"/>
+ <tile id="21" terrain="0,0,0,0"/>
+ <tile id="22" terrain="0,0,0,0"/>
+ <tile id="23" terrain="0,,0,"/>
+ <tile id="32" terrain=",0,,0"/>
+ <tile id="33" terrain="0,0,0,0"/>
+ <tile id="34" terrain="0,0,0,0"/>
+ <tile id="35" terrain="0,0,0,0"/>
+ <tile id="36" terrain="0,0,0,0"/>
+ <tile id="37" terrain="0,0,0,0"/>
+ <tile id="38" terrain="0,0,0,0"/>
+ <tile id="39" terrain="0,,0,"/>
+ <tile id="48" terrain=",0,,0"/>
+ <tile id="49" terrain="0,0,0,0"/>
+ <tile id="50" terrain="0,0,0,0"/>
+ <tile id="51" terrain="0,0,0,0"/>
+ <tile id="52" terrain="0,0,0,0"/>
+ <tile id="53" terrain="0,0,0,0"/>
+ <tile id="54" terrain="0,0,0,0"/>
+ <tile id="55" terrain="0,,0,"/>
+ <tile id="64" terrain=",0,,0"/>
+ <tile id="65" terrain="0,0,0,0"/>
+ <tile id="66" terrain="0,0,0,0"/>
+ <tile id="67" terrain="0,0,0,0"/>
+ <tile id="68" terrain="0,0,0,0"/>
+ <tile id="69" terrain="0,0,0,0"/>
+ <tile id="70" terrain="0,0,0,0"/>
+ <tile id="71" terrain="0,,0,"/>
+ <tile id="80" terrain=",0,,0"/>
+ <tile id="81" terrain="0,0,0,0"/>
+ <tile id="82" terrain="0,0,0,0"/>
+ <tile id="83" terrain="0,0,0,0"/>
+ <tile id="84" terrain="0,0,0,0"/>
+ <tile id="85" terrain="0,0,0,0"/>
+ <tile id="86" terrain="0,0,0,0"/>
+ <tile id="87" terrain="0,,0,"/>
+ <tile id="96" terrain=",0,,0"/>
+ <tile id="97" terrain="0,0,0,0"/>
+ <tile id="98" terrain="0,0,0,0"/>
+ <tile id="99" terrain="0,0,0,0"/>
+ <tile id="100" terrain="0,0,0,0"/>
+ <tile id="101" terrain="0,0,0,0"/>
+ <tile id="102" terrain="0,0,0,0"/>
+ <tile id="103" terrain="0,,0,"/>
+ <tile id="112" terrain=",0,,"/>
+ <tile id="113" terrain="0,0,,"/>
+ <tile id="114" terrain="0,0,,"/>
+ <tile id="115" terrain="0,0,,"/>
+ <tile id="116" terrain="0,0,,"/>
+ <tile id="117" terrain="0,0,,"/>
+ <tile id="118" terrain="0,0,,"/>
+ <tile id="119" terrain="0,,,"/>
+</tileset>

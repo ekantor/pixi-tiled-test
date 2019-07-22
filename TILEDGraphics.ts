@@ -22,7 +22,7 @@ export default class TILEDGraphics extends PIXI.Container {
 					layerData.data.forEach((id, index) => {
 						const i = index % layerData.width + layerData.x;
 						const j = Math.floor(index / layerData.width) + layerData.y;
-						if (tileNum++ % 16384 == 0) {
+						if (tileNum++ % 16383 == 0) {
 							currTileLayer = container.addChild(new PIXI.tilemap.CompositeRectTileLayer());
 						}							
 						const x = i * tileset.tilewidth + (layerData.offsetx || 0);

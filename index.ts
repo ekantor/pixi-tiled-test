@@ -16,14 +16,14 @@ world.addBody(body);
 
 
 window.onload = () => {	
-	const app = new PIXI.Application({ width: 800, height: 600 });
+	const app = new PIXI.Application({ width: window.innerWidth, height: window.innerHeight });
 	
 	const player = new PIXI.Graphics();
 	player.beginFill(0x0000ff);
 	player.drawCircle(0, 0, 32);
 	player.endFill();
 	
-	const worldMapPath = 'assets/world/map.json';
+	const worldMapPath = 'assets/world_map/map.json';
 	fetch(worldMapPath).then(res => res.json()).then(tilemap => {
 		app.stage.addChild(new TILEDGraphics(tilemap, worldMapPath));
 		app.stage.addChild(player);
@@ -36,7 +36,7 @@ window.onload = () => {
 		const fields1v1Layer = tilemap.layers.find(layer => layer.name === '1v1');
 		if (fields1v1Layer) {
 			fields1v1Layer.objects.forEach(object => {
-				const field1v1Path = 'assets/1v1/1v1_field.json';
+				const field1v1Path = object.name == 'erdei' ? 'assets/fields/1v1 palya_erdei/1v1 palya_erdei.json' : 'assets/fields/1v1_field/1v1_field.json';
 				fetch(field1v1Path).then(res => res.json()).then(tilemap => {
 					const fieldGraphics = app.stage.addChild(new TILEDGraphics(tilemap, field1v1Path));
 					fieldGraphics.x = object.x;
