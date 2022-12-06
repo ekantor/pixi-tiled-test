@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "http-server": "^0.11.1",
+    "http-server": "^0.11.2",
     "pixi-tilemap": "file:../pixi-tilemap",
     "pixi.js": "^5.0.4"
   },
